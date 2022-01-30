@@ -3,38 +3,36 @@ package adapter
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/hmrkm/user-manage-system/domain"
+	"github.com/hmrkm/user-manage-system/usecase"
 )
 
 //go:generate mockgen -source=$GOFILE -self_package=github.com/hmrkm/user-manage-system/$GOPACKAGE -package=$GOPACKAGE -destination=users_mock.go
-type UsersAdapter interface {
-	List(ctx context.Context, req *RequestUsersList, token string) (*ResponseUsersList, error)
+type Users interface {
+	List(ctx context.Context, req *RequestUsersList) (*ResponseUsersList, error)
 }
 
-type usersAdapter struct {
-	com          domain.Communicator
-	authEndpoint string
+type users struct {
+	usecase usecase.Users
 }
 
-func NewUserAdapter(com domain.Communicator, authEndpoint string) UsersAdapter {
-	return &usersAdapter{
-		com:          com,
-		authEndpoint: authEndpoint,
+func NewUsers(usecase usecase.Users) Users {
+	return &users{
+		usecase: usecase,
 	}
 }
 
-func (ua *usersAdapter) List(ctx context.Context, req *RequestUsersList, token string) (*ResponseUsersList, error) {
-	res, err := ua.com.Request(ctx, ua.authEndpoint, map[string]string{
-		"token": token,
-	})
+func (ua *users) List(ctx context.Context, req *RequestUsersList) (*ResponseUsersList, error) {
+	r, err := ua.usecase.List(ctx, req.AuthToken, req.Page, req.Limit)
 	if err != nil {
-		return nil, domain.ErrNotAuthorized
+		return nil, err
 	}
-	user := &User{}
-	json.Unmarshal(res, user)
-	fmt.Println(user)
 
-	return &ResponseUsersList{}, nil
+	res := &ResponseUsersList{}
+	if err := json.Unmarshal(r, res); err != nil {
+		return nil, domain.ErrJSONUnmarshal
+	}
+
+	return res, nil
 }

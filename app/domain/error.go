@@ -7,4 +7,5 @@ var (
 	ErrNotAuthorized = errors.New("not authorized")
 	ErrForbidden     = errors.New("forbidden")
 	ErrNotReaching   = errors.New("not reaching")
+	ErrJSONUnmarshal = errors.New("unmarshal json")
 )

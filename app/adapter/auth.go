@@ -5,33 +5,30 @@ import (
 	"encoding/json"
 
 	"github.com/hmrkm/user-manage-system/domain"
+	"github.com/hmrkm/user-manage-system/usecase"
 )
 
-type AuthAdapter interface {
+type Auth interface {
 	Auth(ctx context.Context, req *RequestAuth) (*ResponseAuth, error)
 }
 
-type authAdapter struct {
-	com          domain.Communicator
-	authEndpoint string
+type auth struct {
+	usecase usecase.Auth
 }
 
-func NewAuthAtapdater(com domain.Communicator, authEndpoint string) AuthAdapter {
-	return &authAdapter{
-		com:          com,
-		authEndpoint: authEndpoint,
+func NewAuth(usecase usecase.Auth) Auth {
+	return &auth{
+		usecase: usecase,
 	}
 }
 
-func (aa *authAdapter) Auth(ctx context.Context, req *RequestAuth) (*ResponseAuth, error) {
-	res, err := aa.com.Request(ctx, aa.authEndpoint, map[string]string{
-		"token": token,
-	})
-	if err != nil {
-		return nil, domain.ErrNotAuthorized
-	}
-	user := &User{}
-	json.Unmarshal(res, user)
+func (aa *auth) Auth(ctx context.Context, req *RequestAuth) (*ResponseAuth, error) {
+	r, err := aa.usecase.Auth(ctx, req.Email, req.Password)
 
-	return nil, nil
+	res := &ResponseAuth{}
+	if err := json.Unmarshal(r, res); err != nil {
+		return nil, domain.ErrJSONUnmarshal
+	}
+
+	return res, err
 }

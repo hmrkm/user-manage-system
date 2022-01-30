@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Router(e *echo.Echo, ua adapter.UsersAdapter, aa adapter.AuthAdapter) {
+func Router(e *echo.Echo, ua adapter.Users, aa adapter.Auth) {
 	e.POST("/v1/auth", func(c echo.Context) error {
 		req := &adapter.RequestAuth{}
 		if err := c.Bind(req); err != nil {
@@ -25,10 +25,7 @@ func Router(e *echo.Echo, ua adapter.UsersAdapter, aa adapter.AuthAdapter) {
 			return c.JSON(400, nil)
 		}
 
-		token := c.Request().Header.Get("auth_token")
-
-		res, err := ua.List(c.Request().Context(), req, token)
-
+		res, err := ua.List(c.Request().Context(), req)
 		if err != nil {
 			return ErrorHandler(c, err)
 		}

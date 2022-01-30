@@ -23,6 +23,9 @@ type RequestAuth struct {
 
 // ユーザー新規作成リクエスト
 type RequestUsersCreate struct {
+	// 認証トークン
+	AuthToken string `json:"auth_token"`
+
 	// メールアドレス
 	Email string `json:"email"`
 
@@ -35,18 +38,27 @@ type RequestUsersCreate struct {
 
 // ユーザー削除リクエスト
 type RequestUsersDelete struct {
+	// 認証トークン
+	AuthToken string `json:"auth_token"`
+
 	// ユーザーID
 	Id string `json:"id"`
 }
 
 // ユーザー詳細情報取得リクエスト
 type RequestUsersDetail struct {
+	// 認証トークン
+	AuthToken string `json:"auth_token"`
+
 	// ユーザーID
 	Id string `json:"id"`
 }
 
 // ユーザーリスト取得リクエスト
 type RequestUsersList struct {
+	// 認証トークン
+	AuthToken string `json:"auth_token"`
+
 	// 件数
 	Limit int `json:"limit"`
 
@@ -56,6 +68,9 @@ type RequestUsersList struct {
 
 // ユーザー詳細更新リクエスト
 type RequestUsersUpdate struct {
+	// 認証トークン
+	AuthToken string `json:"auth_token"`
+
 	// メールアドレス
 	Email string `json:"email"`
 
@@ -77,9 +92,6 @@ type User struct {
 	// ユーザーID
 	Id string `json:"id"`
 }
-
-// AuthToken defines model for auth_token.
-type AuthToken string
 
 // ResponseAuth defines model for ResponseAuth.
 type ResponseAuth struct {
@@ -108,47 +120,17 @@ type PostV1AuthJSONBody RequestAuth
 // PostV1UsersCreateJSONBody defines parameters for PostV1UsersCreate.
 type PostV1UsersCreateJSONBody RequestUsersCreate
 
-// PostV1UsersCreateParams defines parameters for PostV1UsersCreate.
-type PostV1UsersCreateParams struct {
-	// 認証トークン
-	AuthToken *AuthToken `json:"auth_token,omitempty"`
-}
-
 // PostV1UsersDeleteJSONBody defines parameters for PostV1UsersDelete.
 type PostV1UsersDeleteJSONBody RequestUsersDelete
-
-// PostV1UsersDeleteParams defines parameters for PostV1UsersDelete.
-type PostV1UsersDeleteParams struct {
-	// 認証トークン
-	AuthToken *AuthToken `json:"auth_token,omitempty"`
-}
 
 // PostV1UsersDetailJSONBody defines parameters for PostV1UsersDetail.
 type PostV1UsersDetailJSONBody RequestUsersDetail
 
-// PostV1UsersDetailParams defines parameters for PostV1UsersDetail.
-type PostV1UsersDetailParams struct {
-	// 認証トークン
-	AuthToken *AuthToken `json:"auth_token,omitempty"`
-}
-
 // PostV1UsersListJSONBody defines parameters for PostV1UsersList.
 type PostV1UsersListJSONBody RequestUsersList
 
-// PostV1UsersListParams defines parameters for PostV1UsersList.
-type PostV1UsersListParams struct {
-	// 認証トークン
-	AuthToken *AuthToken `json:"auth_token,omitempty"`
-}
-
 // PostV1UsersUpdateJSONBody defines parameters for PostV1UsersUpdate.
 type PostV1UsersUpdateJSONBody RequestUsersUpdate
-
-// PostV1UsersUpdateParams defines parameters for PostV1UsersUpdate.
-type PostV1UsersUpdateParams struct {
-	// 認証トークン
-	AuthToken *AuthToken `json:"auth_token,omitempty"`
-}
 
 // PostV1AuthJSONRequestBody defines body for PostV1Auth for application/json ContentType.
 type PostV1AuthJSONRequestBody PostV1AuthJSONBody

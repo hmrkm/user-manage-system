@@ -30,8 +30,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RequestUsersList'
-      parameters:
-        - $ref: '#/components/parameters/auth_token'
+      parameters: []
   /v1/users/create:
     post:
       summary: 新規ユーザー作成
@@ -48,8 +47,7 @@ paths:
         '500':
           description: Internal Server Error
       description: リクエストボディを初期値にしたレコードをusersテーブルに追加する
-      parameters:
-        - $ref: '#/components/parameters/auth_token'
+      parameters: []
       requestBody:
         content:
           application/json:
@@ -78,8 +76,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RequestUsersDetail'
-      parameters:
-        - $ref: '#/components/parameters/auth_token'
+      parameters: []
   /v1/users/update:
     post:
       summary: ''
@@ -98,8 +95,7 @@ paths:
         '500':
           description: Internal Server Error
       description: usersテーブルのレコードを更新する
-      parameters:
-        - $ref: '#/components/parameters/auth_token'
+      parameters: []
       requestBody:
         content:
           application/json:
@@ -123,8 +119,7 @@ paths:
         '500':
           description: Internal Server Error
       description: usersテーブルからレコードを削除する
-      parameters:
-        - $ref: '#/components/parameters/auth_token'
+      parameters: []
       requestBody:
         content:
           application/json:
@@ -166,10 +161,14 @@ components:
         password_conf:
           type: string
           description: 確認用パスワード
+        auth_token:
+          type: string
+          description: 認証トークン
       required:
         - email
         - password
         - password_conf
+        - auth_token
     RequestUsersUpdate:
       title: RequestUsersUpdate
       type: object
@@ -187,12 +186,17 @@ components:
         password_conf:
           type: string
           description: 確認用パスワード
+        auth_token:
+          type: string
+          description: 認証トークン
       required:
         - id
         - email
+        - auth_token
     RequestUsersList:
       title: RequestUsersList
       type: object
+      description: ユーザーリスト取得リクエスト
       properties:
         page:
           type: integer
@@ -200,30 +204,41 @@ components:
         limit:
           type: integer
           description: 件数
+        auth_token:
+          type: string
+          description: 認証トークン
       required:
         - page
         - limit
-      description: ユーザーリスト取得リクエスト
+        - auth_token
     RequestUsersDetail:
       title: RequestUsersDetail
       type: object
+      description: ユーザー詳細情報取得リクエスト
       properties:
         id:
           type: string
           description: ユーザーID
+        auth_token:
+          type: string
+          description: 認証トークン
       required:
         - id
-      description: ユーザー詳細情報取得リクエスト
+        - auth_token
     RequestUsersDelete:
       title: RequestUsersDelete
       type: object
+      description: ユーザー削除リクエスト
       properties:
         id:
           type: string
           description: ユーザーID
+        auth_token:
+          type: string
+          description: 認証トークン
       required:
         - id
-      description: ユーザー削除リクエスト
+        - auth_token
     RequestAuth:
       title: RequestAuth
       type: object
@@ -308,13 +323,6 @@ components:
             required:
               - token
               - expired_at
-  parameters:
-    auth_token:
-      name: auth_token
-      in: header
-      required: false
-      schema:
-        type: string
-      description: 認証トークン
+  parameters: {}
 tags:
   - name: adapter
