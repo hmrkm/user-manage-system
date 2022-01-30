@@ -1,0 +1,320 @@
+openapi: 3.1.0
+info:
+  title: user-manage-system
+  version: '1.0'
+  contact:
+    name: dummy
+  description: ユーザー管理システム
+servers:
+  - url: 'http://localhost:80'
+paths:
+  /v1/users/list:
+    parameters: []
+    post:
+      summary: ユーザーリスト取得
+      operationId: post-v1-users-list
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseUsersList'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      description: usersテーブルからlimit数、(page-1)*limitオフセットのデータを取得する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUsersList'
+      parameters:
+        - $ref: '#/components/parameters/auth_token'
+  /v1/users/create:
+    post:
+      summary: 新規ユーザー作成
+      operationId: post-v1-users-create
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      description: リクエストボディを初期値にしたレコードをusersテーブルに追加する
+      parameters:
+        - $ref: '#/components/parameters/auth_token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUsersCreate'
+  /v1/users/detail:
+    post:
+      summary: ユーザー詳細取得
+      operationId: post-v1-users-detail
+      description: idをキーにusersテーブルを検索し、ヒットしたレコードを返す
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseUsersDetail'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUsersDetail'
+      parameters:
+        - $ref: '#/components/parameters/auth_token'
+  /v1/users/update:
+    post:
+      summary: ''
+      operationId: post-v1-users-update
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      description: usersテーブルのレコードを更新する
+      parameters:
+        - $ref: '#/components/parameters/auth_token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUsersUpdate'
+  /v1/users/delete:
+    post:
+      summary: ユーザー削除
+      operationId: post-v1-users-delete
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      description: usersテーブルからレコードを削除する
+      parameters:
+        - $ref: '#/components/parameters/auth_token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestUsersDelete'
+  /v1/auth:
+    post:
+      summary: 認証
+      operationId: post-v1-auth
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseAuth'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      description: ユーザー名、パスワードで認証
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestAuth'
+        description: ''
+components:
+  schemas:
+    RequestUsersCreate:
+      title: RequestPostUsers
+      type: object
+      description: ユーザー新規作成リクエスト
+      properties:
+        email:
+          type: string
+          description: メールアドレス
+        password:
+          type: string
+          description: パスワード
+        password_conf:
+          type: string
+          description: 確認用パスワード
+      required:
+        - email
+        - password
+        - password_conf
+    RequestUsersUpdate:
+      title: RequestUsersUpdate
+      type: object
+      description: ユーザー詳細更新リクエスト
+      properties:
+        id:
+          type: string
+          description: ユーザーID
+        email:
+          type: string
+          description: メールアドレス
+        password:
+          type: string
+          description: 更新後パスワード
+        password_conf:
+          type: string
+          description: 確認用パスワード
+      required:
+        - id
+        - email
+    RequestUsersList:
+      title: RequestUsersList
+      type: object
+      properties:
+        page:
+          type: integer
+          description: ページャー
+        limit:
+          type: integer
+          description: 件数
+      required:
+        - page
+        - limit
+      description: ユーザーリスト取得リクエスト
+    RequestUsersDetail:
+      title: RequestUsersDetail
+      type: object
+      properties:
+        id:
+          type: string
+          description: ユーザーID
+      required:
+        - id
+      description: ユーザー詳細情報取得リクエスト
+    RequestUsersDelete:
+      title: RequestUsersDelete
+      type: object
+      properties:
+        id:
+          type: string
+          description: ユーザーID
+      required:
+        - id
+      description: ユーザー削除リクエスト
+    RequestAuth:
+      title: RequestAuth
+      type: object
+      description: 認証リクエストボディ
+      properties:
+        email:
+          type: string
+          description: メールアドレス
+        password:
+          type: string
+          description: パスワード
+      required:
+        - email
+        - password
+    User:
+      title: User
+      type: object
+      description: ユーザー
+      properties:
+        id:
+          type: string
+          description: ユーザーID
+        email:
+          type: string
+          description: メールアドレス
+      required:
+        - id
+        - email
+    Page:
+      title: Page
+      type: object
+      description: ページャー
+      properties:
+        now:
+          type: integer
+          description: 現在位置
+        last:
+          type: integer
+          description: 最終位置
+      required:
+        - now
+        - last
+  responses:
+    ResponseUsersList:
+      description: ユーザーリスト取得の応答
+      content:
+        application/json:
+          schema:
+            type: object
+            description: ''
+            properties:
+              list:
+                type: array
+                description: ユーザーリスト
+                items:
+                  $ref: '#/components/schemas/User'
+              page:
+                $ref: '#/components/schemas/Page'
+            required:
+              - list
+              - page
+          examples: {}
+    ResponseUsersDetail:
+      description: ユーザー詳細習得応答
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    ResponseAuth:
+      description: 認証成功応答
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: 認証トークン
+              expired_at:
+                type: integer
+                description: 認証トークンの有効期限Unixtimeミリ秒
+            required:
+              - token
+              - expired_at
+  parameters:
+    auth_token:
+      name: auth_token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: 認証トークン
+tags:
+  - name: adapter
