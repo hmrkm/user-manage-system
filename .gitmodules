@@ -1,0 +1,9 @@
+[submodule "auth"]
+	path = auth
+	url = https://github.com/hmrkm/simple-auth
+[submodule "rights"]
+	path = rights
+	url = https://github.com/hmrkm/simple-rights
+[submodule "user-manage"]
+	path = user-manage
+	url = https://github.com/hmrkm/simple-user-manage
