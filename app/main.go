@@ -16,7 +16,7 @@ func main() {
 
 	http := io.NewHTTP(5, 5)
 	au := usecase.NewAuth(http, config.AuthEndpoint)
-	uu := usecase.NewUsers(http, config.VerifyEndpoint, config.UserManageBaseurl)
+	uu := usecase.NewUsers(http, config.VerifyEndpoint, config.RightsEndpoint, config.UserManageBaseurl, "v1/users/list")
 	ua := adapter.NewUsers(uu)
 	aa := adapter.NewAuth(au)
 

@@ -14,14 +14,22 @@ type Users interface {
 type users struct {
 	com            domain.Communicator
 	verifyEndpoint string
-	baseUrl        string
+	rightsEndpoint string
+	baseURL        string
+	apiPath        string
 }
 
-func NewUsers(com domain.Communicator, verifyEndpoint string, baseUrl string) Users {
+func (u *users) getApiURL() string {
+	return u.baseURL + u.apiPath
+}
+
+func NewUsers(com domain.Communicator, verifyEndpoint string, rightsEndpoint string, baseURL string, apiPath string) Users {
 	return &users{
 		com:            com,
 		verifyEndpoint: verifyEndpoint,
-		baseUrl:        baseUrl,
+		rightsEndpoint: rightsEndpoint,
+		baseURL:        baseURL,
+		apiPath:        apiPath,
 	}
 }
 
@@ -51,17 +59,32 @@ func NewRequestUsersList(page int, limit int) requestUsersList {
 	}
 }
 
+type requestRights struct {
+	UserId   string
+	Resource string
+}
+
+func NewRequestRights(userId string, resource string) requestRights {
+	return requestRights{
+		UserId:   userId,
+		Resource: resource,
+	}
+}
+
 func (uu *users) List(ctx context.Context, token string, page int, limit int) ([]byte, error) {
-	r, err := uu.com.Request(ctx, uu.verifyEndpoint, NewRequestVerify(token))
+	verifyResp, err := uu.com.Request(ctx, uu.verifyEndpoint, NewRequestVerify(token))
 	if err != nil {
 		return nil, domain.ErrNotAuthorized
 	}
 
-	res := &responseVerify{}
-	if err := json.Unmarshal(r, res); err != nil {
+	verifyResponse := &responseVerify{}
+	if err := json.Unmarshal(verifyResp, verifyResponse); err != nil {
 		return nil, domain.ErrJSONUnmarshal
 	}
 
-	url := uu.baseUrl + "v1/users/list"
-	return uu.com.Request(ctx, url, NewRequestUsersList(page, limit))
+	if _, err := uu.com.Request(ctx, uu.rightsEndpoint, NewRequestRights(verifyResponse.User.ID, uu.apiPath)); err != nil {
+		return nil, domain.ErrForbidden
+	}
+
+	return uu.com.Request(ctx, uu.getApiURL(), NewRequestUsersList(page, limit))
 }
