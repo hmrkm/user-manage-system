@@ -43,7 +43,7 @@ func NewRequestVerify(token string) requestVerify {
 	}
 }
 
-type responseVerify struct {
+type responseAuth struct {
 	User domain.User
 }
 
@@ -72,17 +72,17 @@ func NewRequestRights(userId string, resource string) requestRights {
 }
 
 func (uu *users) List(ctx context.Context, token string, page int, limit int) ([]byte, error) {
-	verifyResp, err := uu.com.Request(ctx, uu.verifyEndpoint, NewRequestVerify(token))
+	authResp, err := uu.com.Request(ctx, uu.verifyEndpoint, NewRequestVerify(token))
 	if err != nil {
 		return nil, domain.ErrNotAuthorized
 	}
 
-	verifyResponse := &responseVerify{}
-	if err := json.Unmarshal(verifyResp, verifyResponse); err != nil {
+	authResponse := &responseAuth{}
+	if err := json.Unmarshal(authResp, authResponse); err != nil {
 		return nil, domain.ErrJSONUnmarshal
 	}
 
-	if _, err := uu.com.Request(ctx, uu.rightsEndpoint, NewRequestRights(verifyResponse.User.ID, uu.apiPath)); err != nil {
+	if _, err := uu.com.Request(ctx, uu.rightsEndpoint, NewRequestRights(authResponse.User.ID, uu.apiPath)); err != nil {
 		return nil, domain.ErrForbidden
 	}
 
